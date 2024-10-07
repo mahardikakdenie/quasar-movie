@@ -7,6 +7,12 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
   },
 
+  {
+    path: '/login',
+    name: 'LoginPage',
+    component: () => import('pages/LoginPage.vue'),
+  },
+
   // Always leave this as last one,
   // but you can also remove it
   {
