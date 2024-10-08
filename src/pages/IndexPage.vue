@@ -1,27 +1,32 @@
 <template>
   <q-page class="q-pa-lg">
-    <div class="row justify-between" style="margin-bottom: 20px;">
-      <div class="text-h6 text-white q-mb-md">
-        Movies
-        <q-icon name="add_circle_outline" size="sm" />
-      </div>
-      <div class="logout-btn">
-        <!-- <q-btn flat color="white" size="sm" class="q-px-md q-py-xs">
-          <span>Logout</span>
-          <q-icon name="exit_to_app" class="q-ml-sm" />
-        </q-btn> -->
-        <q-btn flat color="white" rounded label="Logout" size="sm" icon="exit_to_app" />
-      </div>
+    <BreadcrumbComponents title="Movies" />
+
+    <div class="row justify-end" style="margin-bottom: 15px;">
+      <q-btn color="primary" flat rounded>
+        Buat Movie
+        <q-icon name="add" style="font-size: 13px;"></q-icon>
+      </q-btn>
     </div>
 
     <!-- Grid layout for movie cards -->
     <div class="movie-grid">
-      <div v-for="movie in movies" :key="movie.id" class="movie-card-container">
+      <div v-for="movie in movies" :key="movie.id" class="movie-card-container" style="cursor: pointer;">
         <div class="movie-card">
-          <img :src="movie.image" alt="Movie image" class="movie-img" />
+          <img v-if="movie.media_parse && movie.media_parse.data && movie.media_parse.data.display_url" :src="movie.media_parse.data.display_url" alt="Movie image" class="movie-img" />
+          <img v-else src="https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75" alt="Movie image" class="movie-img" />
           <div class="movie-info">
-            <div class="text-weight-bold">{{ movie.name }}</div>
-            <div class="text-grey">{{ movie.year }}</div>
+            <div class="text-weight-bold row justify-between">
+              <span>
+                {{ movie.title }}
+              </span>
+              <q-icon name="edit" style="font-size: 16px;" color="primary">
+                <q-tooltip>
+                  Edit Movie
+                </q-tooltip>
+              </q-icon>
+            </div>
+            <div class="text-grey">{{ movie.publish }}</div>
           </div>
         </div>
       </div>
@@ -31,7 +36,7 @@
     <div class="row justify-center" style="margin-top: 20px;">
       <q-pagination
         v-model="page"
-        :max="totalPages"
+        :max="meta.last_page"
         :boundary-numbers="true"
         @update:model-value="onPageChange"
       />
@@ -40,97 +45,62 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { AxiosError, AxiosResponse } from 'axios';
+import { MovieApiResponse, Movie, Meta } from 'src/libs/interface/movie-interface';
+import { ref, onMounted } from 'vue';
+import { getData } from 'src/libs/api/movies';
+import BreadcrumbComponents from 'src/components/BreadcrumbComponents.vue';
 
 // Define the type for a movie
-interface Movie {
-  id: number;
-  name: string;
-  year: number;
-  image: string;
-}
-
 // Movie data
-const movies = ref<Movie[]>([
-  {
-    id: 1,
-    name: 'Movie 1',
-    year: 2021,
-    image:
-      'https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75',
-  },
-  {
-    id: 2,
-    name: 'Movie 2',
-    year: 2021,
-    image:
-      'https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75',
-  },
-  {
-    id: 3,
-    name: 'Movie 3',
-    year: 2021,
-    image:
-      'https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75',
-  },
-  {
-    id: 4,
-    name: 'Movie 4',
-    year: 2021,
-    image:
-      'https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75',
-  },
-  {
-    id: 5,
-    name: 'Movie 5',
-    year: 2021,
-    image:
-      'https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75',
-  },
-  {
-    id: 6,
-    name: 'Movie 6',
-    year: 2021,
-    image:
-      'https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75',
-  },
-  {
-    id: 7,
-    name: 'Movie 6',
-    year: 2021,
-    image:
-      'https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75',
-  },
-  {
-    id: 8,
-    name: 'Movie 6',
-    year: 2021,
-    image:
-      'https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75',
-  },
-  {
-    id: 9,
-    name: 'Movie 6',
-    year: 2021,
-    image:
-      'https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75',
-  },
-  {
-    id: 10,
-    name: 'Movie 6',
-    year: 2021,
-    image:
-      'https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75',
-  },
-]);
+
+const movies = ref<Movie[]>([]);
+const meta = ref<Meta>({
+  'status': true,
+  'message': 'message.success',
+  'code': 200,
+  'total': 0,
+  'per_page': 0,
+  'current_page': 0,
+  'last_page': 0,
+  'from': 0,
+  'to': 0
+});
+
+const getMovie = () => {
+  const params = {
+    entities: 'media',
+    limit: 10,
+    page: page.value,
+  };
+  const callback = (res: AxiosResponse<MovieApiResponse>) => {
+    if (res?.data?.meta?.status) {
+      movies.value = res?.data?.data.map(movie => ({
+        ...movie,
+        media_parse: movie.media?.data ? JSON.parse(movie.media?.data) : null,
+      }));
+
+      meta.value = res?.data?.meta;
+    }
+  };
+
+  const err = (e:AxiosError) => console.log(e);
+
+  getData(params, callback, err);
+};
+
+onMounted(() => {
+  getMovie();
+});
 
 // Pagination data
 const page = ref<number>(1);
-const totalPages = computed(() => Math.ceil(movies.value.length / 6)); // Assuming 6 movies per page
+// const totalPages = computed(() => Math.ceil(movies.value.length / 6)); // Assuming 6 movies per page
 
 // Handle page change
 const onPageChange = (newPage: number): void => {
   page.value = newPage;
+  getMovie();
   // Here you would normally fetch the data for the new page
 };
 </script>
