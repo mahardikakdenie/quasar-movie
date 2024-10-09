@@ -11,7 +11,8 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
-    "start": "quasar serve"
+    "start": "quasar serve",
+    "deploy": "vercel"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
