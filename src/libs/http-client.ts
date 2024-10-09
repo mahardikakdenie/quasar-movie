@@ -1,10 +1,10 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-const url: string | null | undefined =
-  process.env.QUASAR_API_BASE_URL ?? 'http://api.movie.test/api';
+const url: string | undefined =
+  import.meta.env.QUASAR_API_BASE_URL ?? 'http://api.movie.test/api';
 console.log(
   'process.env.VUE_API_BASE_URL -> ',
-  process.env.QUASAR_API_BASE_URL
+  import.meta.env.QUASAR_API_BASE_URL
 );
 
 const token: string | null = localStorage.getItem('token');
