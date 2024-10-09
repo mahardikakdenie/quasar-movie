@@ -2,12 +2,25 @@ import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/:lang',
     component: () => import('layouts/MainLayout.vue'),
     meta: {
       requiresAuth: true,
     },
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    beforeEnter: (to, from, next) => {
+      const supportedLangs = ['en', 'id'];
+      const lang = to.params.lang as string;
+
+      if (!supportedLangs.includes(lang)) {
+        // Redirect to English if the language is not supported
+        return next({ path: '/en' });
+      }
+      next();
+    },
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: 'dika', component: () => import('pages/FormCopo.vue') },
+    ],
   },
 
   {

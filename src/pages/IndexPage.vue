@@ -1,29 +1,45 @@
 <template>
   <q-page class="q-pa-lg">
-    <BreadcrumbComponents title="Movies" />
 
-    <div class="row justify-end" style="margin-bottom: 15px;">
+    <div class="row justify-end" style="margin-bottom: 15px">
       <q-btn color="primary" flat rounded>
-        Buat Movie
-        <q-icon name="add" style="font-size: 13px;"></q-icon>
+        {{ setLang('create_movie', currLang) }}
+        <q-icon name="add" style="font-size: 13px"></q-icon>
       </q-btn>
     </div>
 
     <!-- Grid layout for movie cards -->
     <div class="movie-grid">
-      <div v-for="movie in movies" :key="movie.id" class="movie-card-container" style="cursor: pointer;">
+      <div
+        v-for="movie in movies"
+        :key="movie.id"
+        class="movie-card-container"
+        style="cursor: pointer"
+      >
         <div class="movie-card">
-          <img v-if="movie.media_parse && movie.media_parse.data && movie.media_parse.data.display_url" :src="movie.media_parse.data.display_url" alt="Movie image" class="movie-img" />
-          <img v-else src="https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75" alt="Movie image" class="movie-img" />
+          <img
+            v-if="
+              movie.media_parse &&
+              movie.media_parse.data &&
+              movie.media_parse.data.display_url
+            "
+            :src="movie.media_parse.data.display_url"
+            alt="Movie image"
+            class="movie-img"
+          />
+          <img
+            v-else
+            src="https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75"
+            alt="Movie image"
+            class="movie-img"
+          />
           <div class="movie-info">
             <div class="text-weight-bold row justify-between">
               <span>
                 {{ movie.title }}
               </span>
-              <q-icon name="edit" style="font-size: 16px;" color="primary">
-                <q-tooltip>
-                  Edit Movie
-                </q-tooltip>
+              <q-icon name="edit" style="font-size: 16px" color="primary">
+                <q-tooltip> Edit Movie </q-tooltip>
               </q-icon>
             </div>
             <div class="text-grey">{{ movie.publish }}</div>
@@ -33,7 +49,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="row justify-center" style="margin-top: 20px;">
+    <div class="row justify-center" style="margin-top: 20px">
       <q-pagination
         v-model="page"
         :max="meta.last_page"
@@ -46,25 +62,36 @@
 
 <script lang="ts" setup>
 import { AxiosError, AxiosResponse } from 'axios';
-import { MovieApiResponse, Movie, Meta } from 'src/libs/interface/movie-interface';
-import { ref, onMounted } from 'vue';
+import {
+  MovieApiResponse,
+  Movie,
+  Meta,
+} from 'src/libs/interface/movie-interface';
+import { ref, onMounted, computed } from 'vue';
 import { getData } from 'src/libs/api/movies';
-import BreadcrumbComponents from 'src/components/BreadcrumbComponents.vue';
+import { setLang } from 'src/libs/helper';
+import { useRoute } from 'vue-router';
 
 // Define the type for a movie
 // Movie data
 
 const movies = ref<Movie[]>([]);
 const meta = ref<Meta>({
-  'status': true,
-  'message': 'message.success',
-  'code': 200,
-  'total': 0,
-  'per_page': 0,
-  'current_page': 0,
-  'last_page': 0,
-  'from': 0,
-  'to': 0
+  status: true,
+  message: 'message.success',
+  code: 200,
+  total: 0,
+  per_page: 0,
+  current_page: 0,
+  last_page: 0,
+  from: 0,
+  to: 0,
+});
+
+const route = useRoute();
+
+const currLang = computed(() => {
+  return route.params.lang as string | undefined; // Use a union type to specify possible values
 });
 
 const getMovie = () => {
@@ -75,7 +102,7 @@ const getMovie = () => {
   };
   const callback = (res: AxiosResponse<MovieApiResponse>) => {
     if (res?.data?.meta?.status) {
-      movies.value = res?.data?.data.map(movie => ({
+      movies.value = res?.data?.data.map((movie) => ({
         ...movie,
         media_parse: movie.media?.data ? JSON.parse(movie.media?.data) : null,
       }));
@@ -84,7 +111,7 @@ const getMovie = () => {
     }
   };
 
-  const err = (e:AxiosError) => console.log(e);
+  const err = (e: AxiosError) => console.log(e);
 
   getData(params, callback, err);
 };
@@ -105,7 +132,7 @@ const onPageChange = (newPage: number): void => {
 };
 </script>
 
-<style scoped>
+<style>
 .q-page {
   background-color: #002e48;
   min-height: 100vh;

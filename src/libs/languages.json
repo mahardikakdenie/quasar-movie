@@ -1,0 +1,12 @@
+{
+  "en": {
+    "movies": "Movies",
+    "create_movie": "Create Movie",
+    "logout": "Logout"
+  },
+  "id": {
+    "movies": "Film",
+    "create_movie": "Buat Film",
+    "logout": "Keluar"
+  }
+}
