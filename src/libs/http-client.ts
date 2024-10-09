@@ -21,7 +21,6 @@ const globalErrorHandler = (error: AxiosError): Promise<never> => {
   if (isTokenExpired) {
     // Menghapus token dari localStorage jika token sudah kadaluarsa
     localStorage.removeItem('token');
-    localStorage.removeItem('oo_token');
 
     // Memastikan originalRequest ada sebelum mengakses headers
     const originalRequest: AxiosRequestConfig | undefined = error.config;

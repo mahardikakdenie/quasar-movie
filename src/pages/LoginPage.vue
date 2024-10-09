@@ -79,14 +79,11 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import { login } from 'src/libs/api/auth';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
 const left = ref(false);
 const message = ref('');
-
-const router = useRouter();
 
 const handleLogin = () => {
   // Implement your login logic here
@@ -102,10 +99,13 @@ const handleLogin = () => {
     }>
   ) => {
     if (res?.data?.meta?.status) {
-      const token: string = res.data.data;
+      const token = res.data.data;
 
       localStorage.setItem('token', token);
-      router.push('/');
+      const lang = localStorage.getItem('currentLanguage') ?? 'en';
+
+      // Redirect dan refresh halaman
+      window.location.href = `/${lang}`;
     } else {
       message.value = res?.data?.meta?.message;
     }
