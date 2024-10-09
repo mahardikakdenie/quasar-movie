@@ -2,11 +2,13 @@
   "en": {
     "movies": "Movies",
     "create_movie": "Create Movie",
-    "logout": "Logout"
+    "logout": "Logout",
+    "movie_empty": "Your movie list is empty"
   },
   "id": {
     "movies": "Film",
     "create_movie": "Buat Film",
-    "logout": "Keluar"
+    "logout": "Keluar",
+    "movie_empty": "List Film anda kosong"
   }
 }

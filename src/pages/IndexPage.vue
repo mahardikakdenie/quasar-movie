@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-lg">
 
-    <div class="row justify-end" style="margin-bottom: 15px">
+    <div v-if="movies.length > 0" class="row justify-end" style="margin-bottom: 15px">
       <q-btn color="primary" flat rounded>
         {{ setLang('create_movie', currLang) }}
         <q-icon name="add" style="font-size: 13px"></q-icon>
@@ -9,7 +9,7 @@
     </div>
 
     <!-- Grid layout for movie cards -->
-    <div class="movie-grid">
+    <div v-if="movies.length > 0" class="movie-grid">
       <div
         v-for="movie in movies"
         :key="movie.id"
@@ -48,8 +48,10 @@
       </div>
     </div>
 
+    <EmptyText v-else />
+
     <!-- Pagination -->
-    <div class="row justify-center" style="margin-top: 20px">
+    <div v-if="movies.length > 0" class="row justify-center" style="margin-top: 20px">
       <q-pagination
         v-model="page"
         :max="meta.last_page"
@@ -71,6 +73,7 @@ import { ref, onMounted, computed } from 'vue';
 import { getData } from 'src/libs/api/movies';
 import { setLang } from 'src/libs/helper';
 import { useRoute } from 'vue-router';
+import EmptyText from 'src/components/EmptyText.vue';
 
 // Define the type for a movie
 // Movie data
