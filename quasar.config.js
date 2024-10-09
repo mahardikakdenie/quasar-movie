@@ -50,6 +50,9 @@ module.exports = configure(function (/* ctx */) {
         browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
         node: 'node20'
       },
+      env: {
+        QUASAR_API_BASE_URL: process.env.QUASAR_API_BASE_URL || 'https://fallback-api-url.com'
+      },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,
