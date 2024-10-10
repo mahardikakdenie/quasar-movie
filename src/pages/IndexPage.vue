@@ -42,7 +42,7 @@
               <span class="text-white">
                 {{ movie.title }}
               </span>
-              <q-icon name="edit" style="font-size: 16px; cursor: pointer;" color="primary">
+              <q-icon name="edit" style="font-size: 16px; cursor: pointer;" color="primary" @click="updateMovie(movie)">
                 <q-tooltip> Edit Movie </q-tooltip>
               </q-icon>
             </div>
@@ -64,7 +64,7 @@
         @update:model-value="onPageChange"
       />
     </div>
-    <DialogComponent v-model:open="isModalOpen" @close="isModalOpen = false" @submit="submit" />
+    <DialogComponent v-model:open="isModalOpen" :movie="currentMovie" @close="isModalOpen = false" @submit="submit" />
   </q-page>
 </template>
 
@@ -75,9 +75,11 @@ import {
   MovieApiResponse,
   Movie,
   Meta,
+MovieDTO,
+MovieResponses,
 } from 'src/libs/interface/movie-interface';
 import { ref, onMounted, computed } from 'vue';
-import { getData } from 'src/libs/api/movies';
+import { getData, createMovies } from 'src/libs/api/movies';
 import { setLang } from 'src/libs/helper';
 import { useRoute } from 'vue-router';
 import EmptyText from 'src/components/EmptyText.vue';
@@ -87,6 +89,7 @@ import DialogComponent from 'src/components/DialogComponent.vue';
 // Movie data
 
 const movies = ref<Movie[]>([]);
+const currentMovie = ref<Movie | null>(null);
 const meta = ref<Meta>({
   status: true,
   message: 'message.success',
@@ -104,14 +107,16 @@ const route = useRoute();
 const isModalOpen = ref<boolean>(false);
 const isLoading = ref<boolean>(false)
 
-const currLang = computed(() => {
-  return route.params.lang as string | undefined; // Use a union type to specify possible values
-});
+const currLang = computed<string | undefined>(() => route.params.lang as string | undefined);
 
 const openModal = () => {
   isModalOpen.value = true;
 };
 
+const updateMovie = (movie: Movie) => {
+  currentMovie.value = movie;
+  isModalOpen.value = true;
+}
 
 const getMovie = () => {
   const params = {
@@ -137,8 +142,39 @@ const getMovie = () => {
   getData(params, callback, err);
 };
 
-const submit = (data: { title: string; publish: string; description: string }) => {
-  console.log(data);
+const submit = (data: MovieDTO, isEdit: boolean) => {
+  const params: MovieDTO = {
+    title: data?.title as string,
+    publish: data?.publish as string, 
+    description: data?.description as string,
+    media_id: data?.media_id as (string | number),
+  };
+
+  if (isEdit) {
+    
+  } else {
+    createMovie(params);
+  }
+};
+
+const createMovie = (params: MovieDTO) => {
+  const callback = (res: AxiosResponse<MovieResponses>): void => {
+    console.log(res);
+    const data = {
+      ...res.data.data as unknown as Movie,
+      media_parse: JSON.parse(res?.data?.data?.media?.data ?? ''),
+    }
+
+    movies.value.push(data);
+
+    isModalOpen.value = false;
+  };
+
+  const err = (e: AxiosError) => {
+    console.log(e);
+  };
+
+  createMovies(params, callback, err);
 };
 
 onMounted(() => {

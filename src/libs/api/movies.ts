@@ -4,6 +4,7 @@ import {
   MovieParams,
   MovieApiResponse,
   MovieDTO,
+  MovieResponses,
 } from '../interface/movie-interface';
 
 const endpoint: string = 'movie';
@@ -26,7 +27,7 @@ export const getData = (
 
 export const createMovies = (
   params: MovieDTO,
-  callback: (response: AxiosResponse<MovieApiResponse>) => void,
+  callback: (response: AxiosResponse<MovieResponses>) => void,
   errCallback: (error: AxiosError) => void
 ): void => {
   client

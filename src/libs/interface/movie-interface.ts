@@ -96,7 +96,7 @@ export interface MovieApiResponse {
 
 // Define the response type if the structure of the response is known
 export interface MovieResponses {
-  data: string;
+  data: Movie;
   meta: {
     status: boolean;
   };
@@ -106,5 +106,5 @@ export interface MovieDTO {
   title: string;
   publish: string;
   description: string;
-  mediaId: number | string;
+  media_id: number | string;
 }
