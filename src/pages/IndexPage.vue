@@ -2,14 +2,18 @@
   <q-page class="q-pa-lg">
 
     <div v-if="movies.length > 0" class="row justify-end" style="margin-bottom: 15px">
-      <q-btn color="primary" flat rounded>
+      <q-btn color="primary" flat rounded @click="openModal">
         {{ setLang('create_movie', currLang) }}
         <q-icon name="add" style="font-size: 13px"></q-icon>
       </q-btn>
     </div>
 
+    <div v-if="isLoading" class="row justify-center">
+      <q-img :src="load" class="custom-gif"></q-img>
+    </div>
+
     <!-- Grid layout for movie cards -->
-    <div v-if="movies.length > 0" class="movie-grid">
+    <div v-if="movies.length > 0 && !isLoading" class="movie-grid">
       <div
         v-for="movie in movies"
         :key="movie.id"
@@ -35,35 +39,38 @@
           />
           <div class="movie-info">
             <div class="text-weight-bold row justify-between">
-              <span>
+              <span class="text-white">
                 {{ movie.title }}
               </span>
-              <q-icon name="edit" style="font-size: 16px" color="primary">
+              <q-icon name="edit" style="font-size: 16px; cursor: pointer;" color="primary">
                 <q-tooltip> Edit Movie </q-tooltip>
               </q-icon>
             </div>
-            <div class="text-grey">{{ movie.publish }}</div>
+            <div class="text-white">{{ movie.publish }}</div>
           </div>
         </div>
       </div>
     </div>
 
-    <EmptyText v-else />
+    <EmptyText v-if="movies.length < 0 && !isLoading" @open-modal="openModal" />
 
     <!-- Pagination -->
     <div v-if="movies.length > 0" class="row justify-center" style="margin-top: 20px">
       <q-pagination
+        v-if="meta.last_page > 1"
         v-model="page"
         :max="meta.last_page"
         :boundary-numbers="true"
         @update:model-value="onPageChange"
       />
     </div>
+    <DialogComponent v-model:open="isModalOpen" @close="isModalOpen = false" @submit="submit" />
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import { AxiosError, AxiosResponse } from 'axios';
+import load from 'src/assets/load.gif';
 import {
   MovieApiResponse,
   Movie,
@@ -74,6 +81,7 @@ import { getData } from 'src/libs/api/movies';
 import { setLang } from 'src/libs/helper';
 import { useRoute } from 'vue-router';
 import EmptyText from 'src/components/EmptyText.vue';
+import DialogComponent from 'src/components/DialogComponent.vue';
 
 // Define the type for a movie
 // Movie data
@@ -93,9 +101,17 @@ const meta = ref<Meta>({
 
 const route = useRoute();
 
+const isModalOpen = ref<boolean>(false);
+const isLoading = ref<boolean>(false)
+
 const currLang = computed(() => {
   return route.params.lang as string | undefined; // Use a union type to specify possible values
 });
+
+const openModal = () => {
+  isModalOpen.value = true;
+};
+
 
 const getMovie = () => {
   const params = {
@@ -103,20 +119,26 @@ const getMovie = () => {
     limit: 10,
     page: page.value,
   };
+  isLoading.value = true;
   const callback = (res: AxiosResponse<MovieApiResponse>) => {
     if (res?.data?.meta?.status) {
       movies.value = res?.data?.data.map((movie) => ({
         ...movie,
         media_parse: movie.media?.data ? JSON.parse(movie.media?.data) : null,
       }));
-
+      
       meta.value = res?.data?.meta;
+      isLoading.value = false;
     }
   };
 
   const err = (e: AxiosError) => console.log(e);
 
   getData(params, callback, err);
+};
+
+const submit = (data: { title: string; publish: string; description: string }) => {
+  console.log(data);
 };
 
 onMounted(() => {
@@ -144,7 +166,7 @@ const onPageChange = (newPage: number): void => {
 
 .movie-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 20px;
 }
 
@@ -183,5 +205,9 @@ const onPageChange = (newPage: number): void => {
 
 .q-icon {
   font-size: 1.5rem;
+}
+
+.custom-gif {
+  width: 200px !important;
 }
 </style>

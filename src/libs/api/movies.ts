@@ -1,6 +1,10 @@
 import client from '../http-client';
 import { AxiosResponse, AxiosError } from 'axios';
-import { MovieParams, MovieApiResponse } from '../interface/movie-interface';
+import {
+  MovieParams,
+  MovieApiResponse,
+  MovieDTO,
+} from '../interface/movie-interface';
 
 const endpoint: string = 'movie';
 
@@ -12,6 +16,21 @@ export const getData = (
 ): void => {
   client
     .get<MovieApiResponse>(endpoint, { params })
+    .then((res: AxiosResponse) => {
+      callback(res);
+    })
+    .catch((e: AxiosError) => {
+      errCallback(e);
+    });
+};
+
+export const createMovies = (
+  params: MovieDTO,
+  callback: (response: AxiosResponse<MovieApiResponse>) => void,
+  errCallback: (error: AxiosError) => void
+): void => {
+  client
+    .post(endpoint, params)
     .then((res: AxiosResponse) => {
       callback(res);
     })

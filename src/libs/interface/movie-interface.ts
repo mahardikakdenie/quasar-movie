@@ -101,3 +101,10 @@ export interface MovieResponses {
     status: boolean;
   };
 }
+
+export interface MovieDTO {
+  title: string;
+  publish: string;
+  description: string;
+  mediaId: number | string;
+}

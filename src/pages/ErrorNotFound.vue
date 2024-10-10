@@ -26,6 +26,14 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'ErrorNotFound'
+  name: 'ErrorNotFound',
+
+  mounted() {
+    const lang = localStorage.getItem('currentLanguage') ?? 'en';
+
+    console.log('lang ->', lang);
+
+    this.$router.push(`/${lang}`);
+  },
 });
 </script>

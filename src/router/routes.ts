@@ -10,7 +10,6 @@ const routes: RouteRecordRaw[] = [
     beforeEnter: (to, from, next) => {
       const supportedLangs = ['en', 'id'];
       const lang = to.params.lang as string;
-
       if (!supportedLangs.includes(lang)) {
         // Redirect to English if the language is not supported
         return next({ path: '/en' });
@@ -31,13 +30,13 @@ const routes: RouteRecordRaw[] = [
 
   // Always leave this as last one,
   // but you can also remove it
-  // {
-  //   path: '/:catchAll(.*)*',
-  //   meta: {
-  //     requiresAuth: true,
-  //   },
-  //   component: () => import('pages/ErrorNotFound.vue'),
-  // },
+  {
+    path: '/:catchAll(.*)*',
+    meta: {
+      requiresAuth: true,
+    },
+    component: () => import('pages/ErrorNotFound.vue'),
+  },
 ];
 
 export default routes;

@@ -25,8 +25,9 @@ const currLang = computed(() => {
   return route.params.lang as string | undefined; // Use a union type to specify possible values
 });
 
+const emit = defineEmits(['open-modal']);
+
 const addMovie = () => {
-  // Implement the logic for adding a new movie
-  console.log('Add a new movie clicked');
+  emit('open-modal');
 };
 </script>

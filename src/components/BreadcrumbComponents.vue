@@ -10,11 +10,11 @@
         <q-select
           v-model="selectedLang"
           :options="languages"
-          filled
           option-value="value"
           option-label="label"
-          bg-color="white"
+          class="custom-select"
           dense
+          filled
           style="width: 100px"
           @update:model-value="changeLanguage"
         />
@@ -103,3 +103,20 @@ onMounted(() => {
   selectedLang.value = langFromStorage || 'en'; // Use stored language or default to 'en'
 });
 </script>
+
+<style lang="scss">
+.custom-select {
+  .q-field {
+    &__inner {
+      // border: 1px solid #ddd;
+      border-radius: 15px;
+      display: flex;
+      justify-content: center;
+
+      span, i {
+        color: white;
+      }
+    }
+  }
+}
+</style>
