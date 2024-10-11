@@ -40,3 +40,19 @@ export const login = (
       errCallback(e); // Call the error callback with an error of type `AxiosError`
     });
 };
+
+export const logout = (
+  callback: () => void,
+  errCallback: (error: AxiosError) => void // Using `AxiosError` for error handling
+): void => {
+  const url: string = `${endpoint}/logout`;
+
+  client
+    .post<{ message: string }>(url)
+    .then(() => {
+      callback();
+    })
+    .catch((e: AxiosError) => {
+      errCallback(e); // Call the error callback with an error of type `AxiosError`
+    });
+};

@@ -8,7 +8,7 @@
   >
     <q-card>
       <q-bar style="padding: 20px">
-        <div>{{ setLang('create_movie') }}</div>
+        <div>{{ labelModal }}</div>
         <q-space />
         <q-btn dense flat icon="close" @click="$emit('close')">
           <q-tooltip class="bg-white text-primary">Close</q-tooltip>
@@ -82,7 +82,7 @@
           @click="$emit('close')"
         />
         <q-btn
-          label="Create"
+          :label="labelModal"
           :disable="isBtnDisabled"
           rounded
           flat
@@ -163,6 +163,8 @@ const isBtnDisabled = computed(
     !mediaURL.value ||
     !mediaId.value
 );
+
+const labelModal = computed<string>(() => props.type === 'create' ? setLang('create_movie') : setLang('update_novie') );
 
 const setLang = (text: string): string => {
   const currentLang: LanguageKey =

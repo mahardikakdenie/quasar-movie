@@ -2,6 +2,7 @@
   "en": {
     "movies": "Movies",
     "create_movie": "Create Movie",
+    "update_novie": "Update Movie",
     "logout": "Logout",
     "movie_empty": "Your movie list is empty",
     "title": "Title Movie",
@@ -15,6 +16,7 @@
   "id": {
     "movies": "Film",
     "create_movie": "Buat Film",
+    "update_novie": "Sunting Film",
     "logout": "Keluar",
     "movie_empty": "List Film anda kosong",
     "description": "Deskripti File",

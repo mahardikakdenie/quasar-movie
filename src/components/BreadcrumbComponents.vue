@@ -26,6 +26,7 @@
         :label="setLang('logout')"
         size="sm"
         icon="exit_to_app"
+        @click="logoutUser"
       />
     </div>
   </div>
@@ -35,6 +36,8 @@
 import { ref, onMounted } from 'vue';
 import langs from 'src/libs/languages.json'; // Adjust the path if necessary
 import { useRoute, useRouter } from 'vue-router';
+import { logout } from 'src/libs/api/auth';
+import { AxiosError } from 'axios';
 
 // Define the structure of your translations
 type LanguageKey = 'en' | 'id'; // Define allowed language keys
@@ -94,6 +97,17 @@ const changeLanguage = (event: LanguageKey) => {
 
   // Navigate to the new path
   router.push(newPath);
+};
+
+const logoutUser = () => {
+  const callback = () => {
+    localStorage.removeItem('token');
+    router.push('/login');
+  }
+
+  const err = (e: AxiosError) => console.log(e);
+
+  logout(callback, err)
 };
 
 onMounted(() => {

@@ -51,8 +51,8 @@ module.exports = configure(function (/* ctx */) {
         node: 'node20'
       },
       env: {
-        QUASAR_API_BASE_URL: process.env.QUASAR_API_BASE_URL || 'https://movie-api-laravel-production.up.railway.app/api'
-        // QUASAR_API_BASE_URL: process.env.QUASAR_API_BASE_URL || 'http://api.movie.test/api'
+        // QUASAR_API_BASE_URL: 'https://movie-api-laravel-production.up.railway.app/api'
+        QUASAR_API_BASE_URL: 'http://api.movie.test/api'
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
