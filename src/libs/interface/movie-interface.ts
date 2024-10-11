@@ -79,7 +79,7 @@ export interface Movie {
   updated_at: string;
   media_id: number | null;
   media: Media | null;
-  media_parse?: {
+  media_parse: {
     id: number;
     data: { display_url: string };
     created_at: string;

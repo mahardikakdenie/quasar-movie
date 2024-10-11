@@ -79,7 +79,7 @@ MovieDTO,
 MovieResponses,
 } from 'src/libs/interface/movie-interface';
 import { ref, onMounted, computed } from 'vue';
-import { getData, createMovies } from 'src/libs/api/movies';
+import { getData, createMovies, updateMovies } from 'src/libs/api/movies';
 import { setLang } from 'src/libs/helper';
 import { useRoute } from 'vue-router';
 import EmptyText from 'src/components/EmptyText.vue';
@@ -142,7 +142,7 @@ const getMovie = () => {
   getData(params, callback, err);
 };
 
-const submit = (data: MovieDTO, isEdit: boolean) => {
+const submit = (data: MovieDTO, isEdit: boolean, movieId: (number | string), mediaURL: string) => {
   const params: MovieDTO = {
     title: data?.title as string,
     publish: data?.publish as string, 
@@ -151,7 +151,7 @@ const submit = (data: MovieDTO, isEdit: boolean) => {
   };
 
   if (isEdit) {
-    
+    updateMovieData(movieId, params, mediaURL);
   } else {
     createMovie(params);
   }
@@ -175,6 +175,27 @@ const createMovie = (params: MovieDTO) => {
   };
 
   createMovies(params, callback, err);
+};
+
+const updateMovieData = (id: (string | number) ,params: MovieDTO, mediaURL: string) => {
+  const callback = (res: AxiosResponse<MovieResponses>): void => {
+    const index = movies.value.findIndex(movie => movie.id === id);
+    if (index !== -1) {
+      movies.value[index] = {
+        ...res.data.data as unknown as Movie,
+        media_parse: JSON.parse(res?.data?.data?.media?.data ?? ''),
+      };
+
+      movies.value[index].media_parse.data.display_url = mediaURL ?? '';
+    }
+    isModalOpen.value = false;
+  };
+
+  const err = (e: AxiosError) => {
+    console.log(e);
+  };
+
+  updateMovies(id, params, callback, err);
 };
 
 onMounted(() => {

@@ -39,3 +39,19 @@ export const createMovies = (
       errCallback(e);
     });
 };
+
+export const updateMovies = (
+  id: string | number,
+  params: MovieDTO,
+  callback: (response: AxiosResponse<MovieResponses>) => void,
+  errCallback: (error: AxiosError) => void
+): void => {
+  client
+    .put(`${endpoint}/${id}`, params)
+    .then((res: AxiosResponse) => {
+      callback(res);
+    })
+    .catch((e: AxiosError) => {
+      errCallback(e);
+    });
+};

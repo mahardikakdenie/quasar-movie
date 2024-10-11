@@ -74,7 +74,7 @@
           color="red"
           @click="$emit('close')"
         />
-        <q-btn label="Create" rounded flat color="gray" @click="handle" />
+        <q-btn label="Create" :disable="isBtnDisabled" rounded flat color="gray" @click="handle" />
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -112,6 +112,8 @@ const validYearRule = (val: string) => {
   const yearRegex = /^(19|20)\d{2}$/;
   return yearRegex.test(val) || 'Please enter a valid year (e.g., 2024)';
 };
+
+const isBtnDisabled = computed(() => isLoadingMedia.value);
 
 const mediaId = ref<string | number>(0);
 
@@ -166,7 +168,7 @@ const handle = (): void => {
     description: description.value,
     media_id: mediaId.value,
   };
-  emit('submit', form, isEdit.value);
+  emit('submit', form, isEdit.value, props.movie?.id, mediaURL.value);
 
   title.value = '';
   publish.value = '';
