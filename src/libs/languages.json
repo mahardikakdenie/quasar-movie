@@ -7,7 +7,10 @@
     "title": "Title Movie",
     "description": "Description Movie",
     "publish": "Year publish",
-    "files": "Pick Files"
+    "files": "Pick Files",
+    "validate_publish": "Please enter a valid year (e.g., 2024)",
+    "validate_input": "Please fill this input",
+    "cancel": "Cancel"
   },
   "id": {
     "movies": "Film",
@@ -17,6 +20,9 @@
     "description": "Deskripti File",
     "publish": "Tahun publish",
     "title": "Judul Film",
-    "files": "Pilih FIle"
+    "files": "Pilih FIle",
+    "validate_publish": "Harap masukkan tahun yang valid (misalnya, 2024)",
+    "validate_input": "Harap isi input ini",
+    "cancel": "Batal"
   }
 }

@@ -87,6 +87,7 @@ const currLang = computed(() => route.params.lang as string | undefined);
 const openModal = () => {
   isModalOpen.value = true;
   modalType.value = 'create';
+  currentMovie.value = null;
 };
 
 const updateMovie = (movie: Movie) => {

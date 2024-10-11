@@ -20,27 +20,27 @@
           <q-input
             class="custom-input"
             :label="setLang('title')"
-            placeholder="Title Movie"
+            :placeholder="setLang('title')"
             :rules="[validateInput]"
             v-model="title"
-            />
-            <q-input
+          />
+          <q-input
             class="custom-input"
             :label="setLang('publish')"
-            placeholder="Publish Movie"
+            :placeholder="setLang('publish')"
             :rules="[validYearRule]"
             v-model="publish"
-            />
-            <q-input
+          />
+          <q-input
             class="custom-input"
             :label="setLang('description')"
-            placeholder="Description"
+            :placeholder="setLang('description')"
             type="textarea"
             :rules="[validateInput]"
             v-model="description"
-            />
-            
-            <q-file
+          />
+
+          <q-file
             v-if="!mediaURL"
             :model-value="files"
             :loading="isLoadingMedia"
@@ -75,7 +75,7 @@
 
       <q-card-section class="row justify-end bg-gray">
         <q-btn
-          label="Cancel"
+          :label="setLang('cancel')"
           rounded
           flat
           color="red"
@@ -145,12 +145,13 @@ const mediaId = ref<string | number>(0);
 // Validation rule for year input
 const validYearRule = (val: string) => {
   const yearRegex = /^(19|20)\d{2}$/;
-  return yearRegex.test(val) || 'Please enter a valid year (e.g., 2024)';
+  return yearRegex.test(val) || setLang('validate_publish');
 };
 
 const validateInput = (val: string): boolean | string => {
-  return val !== null && val !== '' ? true : 'Please fill this input';
+  return val !== null && val !== '' ? true : setLang('validate_input');
 };
+
 
 // Button disable state
 const isBtnDisabled = computed(
