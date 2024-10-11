@@ -111,6 +111,7 @@ const handleLogin = () => {
       // Redirect dan refresh halaman
       window.location.href = `/${lang}`;
     } else {
+      isLoading.value = false;
       message.value = res?.data?.meta?.message;
     }
   };
