@@ -64,6 +64,7 @@
               <q-btn
                 class="custom-btn"
                 label="Login"
+                :disable="isLoading"
                 rounded
                 @click="handleLogin"
               />
@@ -84,14 +85,16 @@ const email = ref('');
 const password = ref('');
 const left = ref(false);
 const message = ref('');
+const isLoading = ref<boolean>(false);
 
 const handleLogin = () => {
   // Implement your login logic here
+  isLoading.value = true;
   const params = {
     email: email.value,
     password: password.value,
   };
-
+  
   const callback = (
     res: AxiosResponse<{
       meta: { status: boolean; message: string };
@@ -99,6 +102,7 @@ const handleLogin = () => {
     }>
   ) => {
     if (res?.data?.meta?.status) {
+      isLoading.value = false;
       const token = res.data.data;
 
       localStorage.setItem('token', token);
