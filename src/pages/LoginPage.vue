@@ -104,10 +104,10 @@ const handleLogin = () => {
     if (res?.data?.meta?.status) {
       isLoading.value = false;
       const token = res.data.data;
-
+      
       localStorage.setItem('token', token);
       const lang = localStorage.getItem('currentLanguage') ?? 'en';
-
+      
       // Redirect dan refresh halaman
       window.location.href = `/${lang}`;
     } else {
@@ -115,6 +115,7 @@ const handleLogin = () => {
     }
   };
   const err = (e: AxiosError) => {
+    isLoading.value = false;
     console.log(e);
   };
 
