@@ -46,7 +46,7 @@ interface Translations {
 }
 
 // Assuming langs is of type Translations
-const translations = langs as Translations;
+const translations = langs as unknown as Translations;
 
 defineProps({
   title: {
@@ -63,8 +63,6 @@ const languages = ref<Array<LanguageKey>>([
 
 const setLang = (text: string): string => {
   const currentLang: LanguageKey = (localStorage.getItem('currentLanguage') as LanguageKey) ?? 'en';
-  
-  console.log('🚀 ~ setLang ~ currentLang:', currentLang);
   
   // Use the typed structure to index safely
   const translation = translations[currentLang]?.[text];

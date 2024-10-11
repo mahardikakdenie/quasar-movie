@@ -3,12 +3,20 @@
     "movies": "Movies",
     "create_movie": "Create Movie",
     "logout": "Logout",
-    "movie_empty": "Your movie list is empty"
+    "movie_empty": "Your movie list is empty",
+    "title": "Title Movie",
+    "description": "Description Movie",
+    "publish": "Year publish",
+    "files": "Pick Files"
   },
   "id": {
     "movies": "Film",
     "create_movie": "Buat Film",
     "logout": "Keluar",
-    "movie_empty": "List Film anda kosong"
+    "movie_empty": "List Film anda kosong",
+    "description": "Deskripti File",
+    "publish": "Tahun publish",
+    "title": "Judul Film",
+    "files": "Pilih FIle"
   }
 }

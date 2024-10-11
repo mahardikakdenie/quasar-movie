@@ -10,7 +10,7 @@ interface Translations {
 }
 
 // Assuming langs is of type Translations
-const translations = langs as Translations;
+const translations = langs as unknown as Translations;
 
 export const setLang = (text: string, currlang?: string): string => {
   const currentLang: LanguageKey =
