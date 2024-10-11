@@ -230,6 +230,7 @@ watch(
       description.value = '';
       mediaURL.value = '';
       mediaId.value = 0;
+      files.value = null;
     }
   }
 );
@@ -249,12 +250,5 @@ const handle = (): void => {
     props.movie?.id,
     mediaURL.value
   );
-
-  // Reset form fields
-  title.value = '';
-  publish.value = '';
-  description.value = '';
-  mediaId.value = 0;
-  files.value = null;
 };
 </script>
