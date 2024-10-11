@@ -1,6 +1,5 @@
 <template>
   <q-page class="q-pa-lg">
-
     <div v-if="movies.length > 0" class="row justify-end" style="margin-bottom: 15px">
       <q-btn color="primary" flat rounded @click="openModal">
         {{ setLang('create_movie', currLang) }}
@@ -12,21 +11,11 @@
       <q-img :src="load" class="custom-gif"></q-img>
     </div>
 
-    <!-- Grid layout for movie cards -->
     <div v-if="movies.length > 0 && !isLoading" class="movie-grid">
-      <div
-        v-for="movie in movies"
-        :key="movie.id"
-        class="movie-card-container"
-        style="cursor: pointer"
-      >
+      <div v-for="movie in movies" :key="movie.id" class="movie-card-container" style="cursor: pointer">
         <div class="movie-card">
           <img
-            v-if="
-              movie.media_parse &&
-              movie.media_parse.data &&
-              movie.media_parse.data.display_url
-            "
+            v-if="movie.media_parse?.data?.display_url"
             :src="movie.media_parse.data.display_url"
             alt="Movie image"
             class="movie-img"
@@ -34,16 +23,14 @@
           <img
             v-else
             src="https://next-ecommerve.vercel.app/_next/image?url=https%3A%2F%2Fi.ibb.co.com%2FD9DjPr9%2Ft-shirt-1.jpg&w=3840&q=75"
-            alt="Movie image"
+            alt="Default Movie image"
             class="movie-img"
           />
           <div class="movie-info">
             <div class="text-weight-bold row justify-between">
-              <span class="text-white">
-                {{ movie.title }}
-              </span>
+              <span class="text-white">{{ movie.title }}</span>
               <q-icon name="edit" style="font-size: 16px; cursor: pointer;" color="primary" @click="updateMovie(movie)">
-                <q-tooltip> Edit Movie </q-tooltip>
+                <q-tooltip>Edit Movie</q-tooltip>
               </q-icon>
             </div>
             <div class="text-white">{{ movie.publish }}</div>
@@ -52,9 +39,8 @@
       </div>
     </div>
 
-    <EmptyText v-if="movies.length < 0 && !isLoading" @open-modal="openModal" />
+    <EmptyText v-if="movies.length === 0 && !isLoading" @open-modal="openModal" />
 
-    <!-- Pagination -->
     <div v-if="movies.length > 0" class="row justify-center" style="margin-top: 20px">
       <q-pagination
         v-if="meta.last_page > 1"
@@ -64,154 +50,108 @@
         @update:model-value="onPageChange"
       />
     </div>
-    <DialogComponent v-model:open="isModalOpen" :movie="currentMovie" @close="isModalOpen = false" @submit="submit" />
+
+    <DialogComponent v-model:open="isModalOpen" :type="modalType" :movie="currentMovie" @close="isModalOpen = false" @submit="submit" />
   </q-page>
 </template>
 
 <script lang="ts" setup>
+import { ref, onMounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { AxiosError, AxiosResponse } from 'axios';
 import load from 'src/assets/load.gif';
+import { getData, createMovies, updateMovies } from 'src/libs/api/movies';
+import { setLang } from 'src/libs/helper';
 import {
   MovieApiResponse,
   Movie,
   Meta,
-MovieDTO,
-MovieResponses,
+  MovieDTO,
+  MovieResponses,
 } from 'src/libs/interface/movie-interface';
-import { ref, onMounted, computed } from 'vue';
-import { getData, createMovies, updateMovies } from 'src/libs/api/movies';
-import { setLang } from 'src/libs/helper';
-import { useRoute } from 'vue-router';
 import EmptyText from 'src/components/EmptyText.vue';
 import DialogComponent from 'src/components/DialogComponent.vue';
 
-// Define the type for a movie
-// Movie data
-
 const movies = ref<Movie[]>([]);
 const currentMovie = ref<Movie | null>(null);
-const meta = ref<Meta>({
-  status: true,
-  message: 'message.success',
-  code: 200,
-  total: 0,
-  per_page: 0,
-  current_page: 0,
-  last_page: 0,
-  from: 0,
-  to: 0,
-});
+const meta = ref<Meta>({ status: true, message: 'message.success', code: 200, total: 0, per_page: 0, current_page: 0, last_page: 0, from: 0, to: 0 });
 
 const route = useRoute();
-
 const isModalOpen = ref<boolean>(false);
-const isLoading = ref<boolean>(false)
+const isLoading = ref<boolean>(false);
+const page = ref<number>(1);
+const modalType = ref<'create' | 'update'>('create');
 
-const currLang = computed<string | undefined>(() => route.params.lang as string | undefined);
+const currLang = computed(() => route.params.lang as string | undefined);
 
 const openModal = () => {
   isModalOpen.value = true;
+  modalType.value = 'create';
 };
 
 const updateMovie = (movie: Movie) => {
   currentMovie.value = movie;
   isModalOpen.value = true;
-}
+  modalType.value = 'update';
+};
 
 const getMovie = () => {
-  const params = {
-    entities: 'media',
-    limit: 10,
-    page: page.value,
-  };
   isLoading.value = true;
-  const callback = (res: AxiosResponse<MovieApiResponse>) => {
+  const params = { entities: 'media', limit: 10, page: page.value };
+  
+  getData(params, (res: AxiosResponse<MovieApiResponse>) => {
     if (res?.data?.meta?.status) {
-      movies.value = res?.data?.data.map((movie) => ({
+      movies.value = res.data.data.map(movie => ({
         ...movie,
-        media_parse: movie.media?.data ? JSON.parse(movie.media?.data) : null,
+        media_parse: movie.media?.data ? JSON.parse(movie.media.data) : null,
       }));
-      
-      meta.value = res?.data?.meta;
-      isLoading.value = false;
+      meta.value = res.data.meta;
     }
-  };
-
-  const err = (e: AxiosError) => console.log(e);
-
-  getData(params, callback, err);
+    isLoading.value = false;
+  }, (e: AxiosError) => console.log(e));
 };
 
 const submit = (data: MovieDTO, isEdit: boolean, movieId: (number | string), mediaURL: string) => {
   const params: MovieDTO = {
-    title: data?.title as string,
-    publish: data?.publish as string, 
-    description: data?.description as string,
-    media_id: data?.media_id as (string | number),
+    title: data.title as string,
+    publish: data.publish as string,
+    description: data.description as string,
+    media_id: data.media_id as (string | number),
   };
 
-  if (isEdit) {
-    updateMovieData(movieId, params, mediaURL);
-  } else {
-    createMovie(params);
-  }
+  isEdit ? updateMovieData(movieId, params, mediaURL) : createMovie(params);
 };
 
 const createMovie = (params: MovieDTO) => {
-  const callback = (res: AxiosResponse<MovieResponses>): void => {
-    console.log(res);
-    const data = {
-      ...res.data.data as unknown as Movie,
-      media_parse: JSON.parse(res?.data?.data?.media?.data ?? ''),
-    }
-
-    movies.value.push(data);
-
+  createMovies(params, (res: AxiosResponse<MovieResponses>) => {
+    movies.value.push({
+      ...res.data.data,
+      media_parse: JSON.parse(res.data.data.media?.data ?? ''),
+    });
     isModalOpen.value = false;
-  };
-
-  const err = (e: AxiosError) => {
-    console.log(e);
-  };
-
-  createMovies(params, callback, err);
+  }, (e: AxiosError) => console.log(e));
 };
 
-const updateMovieData = (id: (string | number) ,params: MovieDTO, mediaURL: string) => {
-  const callback = (res: AxiosResponse<MovieResponses>): void => {
+const updateMovieData = (id: (string | number), params: MovieDTO, mediaURL: string) => {
+  updateMovies(id, params, (res: AxiosResponse<MovieResponses>) => {
     const index = movies.value.findIndex(movie => movie.id === id);
     if (index !== -1) {
       movies.value[index] = {
-        ...res.data.data as unknown as Movie,
-        media_parse: JSON.parse(res?.data?.data?.media?.data ?? ''),
+        ...res.data.data,
+        media_parse: JSON.parse(res.data.data.media?.data ?? ''),
       };
-
       movies.value[index].media_parse.data.display_url = mediaURL ?? '';
     }
     isModalOpen.value = false;
-  };
-
-  const err = (e: AxiosError) => {
-    console.log(e);
-  };
-
-  updateMovies(id, params, callback, err);
+  }, (e: AxiosError) => console.log(e));
 };
 
-onMounted(() => {
-  getMovie();
-});
-
-// Pagination data
-const page = ref<number>(1);
-// const totalPages = computed(() => Math.ceil(movies.value.length / 6)); // Assuming 6 movies per page
-
-// Handle page change
-const onPageChange = (newPage: number): void => {
+const onPageChange = (newPage: number) => {
   page.value = newPage;
   getMovie();
-  // Here you would normally fetch the data for the new page
 };
+
+onMounted(getMovie);
 </script>
 
 <style>
