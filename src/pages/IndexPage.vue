@@ -43,7 +43,6 @@
 
     <div v-if="movies.length > 0" class="row justify-center" style="margin-top: 20px">
       <q-pagination
-        v-if="meta.last_page > 1"
         v-model="page"
         :max="meta.last_page"
         :boundary-numbers="true"
